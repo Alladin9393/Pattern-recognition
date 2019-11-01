@@ -1,0 +1,28 @@
+language: python
+
+sudo: required
+
+dist: xenial
+
+python:
+  - "3.6"
+  - "3.7"
+
+install:
+  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
+  - pip install -r requirements-tests.txt
+
+script:
+  - pypi-version check
+  - radon cc cli -nb --total-average
+  - cat requirements.txt requirements-tests.txt requirements-dev.txt | safety check --stdin
+  - bash <(curl -s https://linters.io/sort-requirements) requirements.txt requirements-tests.txt requirements-dev.txt
+  - bash <(curl -s https://linters.io/isort-diff) cli tests
+  - bash <(curl -s https://linters.io/pytest-inits) tests
+  - flake8 cli && flake8 tests
+  - coverage run -m pytest -vv tests
+
+after_success:
+  - coverage report -m && coverage xml
+  - bash <(curl -s https://codecov.io/bash)
