@@ -1,0 +1,8 @@
+FROM python:3.7
+
+WORKDIR /pattern-recognition
+COPY . /pattern-recognition
+
+RUN pip3 install -r requirements.txt -r requirements-dev.txt -r requirements-tests.txt
+
+CMD sleep 7200
